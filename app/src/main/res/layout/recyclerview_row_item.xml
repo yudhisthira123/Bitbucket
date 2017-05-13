@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:orientation="vertical"
+    android:paddingTop="20dp">
+
+    <TextView
+        android:id="@+id/carName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:layout_marginLeft="16dp"
+        android:textColor="@android:color/primary_text_light"
+        tools:text="Maruti"/>
+
+    <TextView
+        android:id="@+id/carAddres"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/carName"
+        android:layout_alignLeft="@+id/carName"
+        android:textSize="16sp"
+        android:textColor="@android:color/primary_text_light"
+        tools:text="Hueglestrase"/>
+
+    <TextView
+        android:id="@+id/coordinates"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:fontFamily="sans-serif-light"
+        android:layout_marginRight="16dp"
+        android:textSize="16sp"
+        android:textColor="@android:color/primary_text_light"
+        tools:text="(-20, 55)"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/carAddres"
+        android:layout_marginTop="20dp"
+        android:background="@color/divider"/>
+
+</RelativeLayout>
