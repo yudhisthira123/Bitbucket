@@ -7,6 +7,8 @@ import java.util.List;
 
 /**
  * Created by yudhisthira on 10/05/17.
+ *
+ * This class single car information
  */
 
 public class Car implements Serializable{
