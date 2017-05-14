@@ -9,6 +9,7 @@ public class CommonConstants {
 
     public static final int                 MY_LOCATION_PERMISSIONS = 1000;
     public static final int                 REQUEST_CHECK_SETTINGS = 1001;
+    public static final int                 INTERNET_CHECK_MESSAGE = 1002;
 
 
     public static final String              CAR_LIST_AVALABLE = "CAR_LIST_AVALABLE";

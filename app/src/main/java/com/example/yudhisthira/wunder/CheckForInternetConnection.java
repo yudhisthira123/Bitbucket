@@ -49,7 +49,7 @@ public class CheckForInternetConnection {
                 }
 
                 Message msg = Message.obtain();
-                msg.what = 100;
+                msg.what = CommonConstants.INTERNET_CHECK_MESSAGE;
                 msg.obj = bAvailable;
                 mCallerThreadHandle.sendMessage(msg);
             }

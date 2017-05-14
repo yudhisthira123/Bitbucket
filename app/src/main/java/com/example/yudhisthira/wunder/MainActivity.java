@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case 100:
+                case CommonConstants.INTERNET_CHECK_MESSAGE:
                     handleNetworkResponse((boolean)msg.obj);
                     break;
             }
