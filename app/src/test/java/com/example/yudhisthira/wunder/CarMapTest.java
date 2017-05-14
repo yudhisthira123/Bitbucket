@@ -1,7 +1,10 @@
 package com.example.yudhisthira.wunder;
 
+import com.example.yudhisthira.wunder.model.MapModelImpl;
+import com.example.yudhisthira.wunder.presenter.IMapPresenter;
+import com.example.yudhisthira.wunder.presenter.MapPresenterImpl;
+import com.example.yudhisthira.wunder.view.IMainMapView;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 
 import org.junit.Test;
@@ -37,7 +40,7 @@ public class CarMapTest {
 
         SupportMapFragment supportMapFragment = SupportMapFragment.newInstance();
 
-        mapPresenter.fetchMap1(supportMapFragment);
+        mapPresenter.fetchMap(supportMapFragment);
 
         mCountDownLatch.await(4000, TimeUnit.MILLISECONDS);
 

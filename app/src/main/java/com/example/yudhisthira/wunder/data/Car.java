@@ -1,4 +1,4 @@
-package com.example.yudhisthira.wunder;
+package com.example.yudhisthira.wunder.data;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by yudhisthira on 10/05/17.
  *
- * This class single car information
+ * This class single car information. GSON will serialize Car information into this class
  */
 
 public class Car implements Serializable{
@@ -37,8 +37,14 @@ public class Car implements Serializable{
     @SerializedName("fuel")
     private int         mCarFuel;
 
-
+    /**
+     *
+     */
     private double      mLatitude;
+
+    /**
+     *
+     */
     private double      mLongitude;
 
     public Car(String name, String address, double lat, double lng) {
@@ -48,20 +54,36 @@ public class Car implements Serializable{
         mLongitude = lng;
     }
 
+    /**
+     *
+     * @return String name of car
+     */
     public String getCarName() {
         return mCarName;
     }
 
+    /**
+     *
+     * @return String address of Car
+     */
     public String getCarAddress() {
         return mCarAddress;
     }
 
+    /**
+     *
+     * @return latitude of car location
+     */
     public double getLatitude() {
         Double d = mLocation.get(1);
 
         return d;
     }
 
+    /**
+     *
+     * @return longitude of car location
+     */
     public double getLongitude() {
         Double d = mLocation.get(0);
 

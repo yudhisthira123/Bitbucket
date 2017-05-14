@@ -1,4 +1,4 @@
-package com.example.yudhisthira.wunder;
+package com.example.yudhisthira.wunder.fragments;
 
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -7,13 +7,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.yudhisthira.wunder.R;
+import com.example.yudhisthira.wunder.data.Car;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by yudhisthira on 09/05/17.
+ * This adapter class for recycler view to display list of Car in UI
  */
-
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemHolder>{
 
     private List<Car> mCarList = new ArrayList<>();
@@ -55,6 +58,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemHo
         notifyDataSetChanged();
     }
 
+    /**
+     * Item holder class which extends from RecyclerView.ViewHolder.
+     * This represents single item in UI
+     */
     public static class ItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView mCarName;
@@ -70,7 +77,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ItemHo
             v.setOnClickListener(this);
         }
 
-        //5
         @Override
         public void onClick(View v) {
             Log.d("RecyclerView", "CLICK!");

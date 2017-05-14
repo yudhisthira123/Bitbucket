@@ -2,23 +2,26 @@ package com.example.yudhisthira.wunder;
 
 import android.app.Application;
 
+import com.example.yudhisthira.wunder.presenter.ICarListPresenter;
+
 /**
  * Created by yudhisthira on 10/05/17.
+ *
+ * Application class
  */
-
 public class WunderApplication extends Application {
-    private IMainPresenter                  mMainPresenter;
+    private ICarListPresenter mMainPresenter;
 
     @Override
     public void onCreate() {
         super.onCreate();
     }
 
-    public void setMainPresenterToApp(IMainPresenter mainPresenter) {
+    public void setMainPresenterToApp(ICarListPresenter mainPresenter) {
         mMainPresenter = mainPresenter;
     }
 
-    public IMainPresenter getMainPresenterFromApp() {
+    public ICarListPresenter getMainPresenterFromApp() {
         return mMainPresenter;
     }
 }

@@ -1,16 +1,10 @@
-package com.example.yudhisthira.wunder;
+package com.example.yudhisthira.wunder.model;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.example.yudhisthira.wunder.data.Car;
+import com.example.yudhisthira.wunder.data.MyCarList;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -21,14 +15,24 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by yudhisthira on 10/05/17.
+ *
+ * This is implementation class of ICarListModel
  */
+public class CarListModelImpl implements ICarListModel {
 
-public class MainModelImpl implements IMainModel {
-
+    /**
+     * List of Car object
+     */
     private List<Car> mCarList = null;
 
+    /**
+     * Car list response callback object
+     */
     private  ICarsResponseCallback mCallback;
 
+    /**
+     * @param callback ICarsResponseCallback object where response will be notify
+     */
     @Override
     public void fetchCarsData(ICarsResponseCallback callback) {
 
@@ -53,18 +57,22 @@ public class MainModelImpl implements IMainModel {
                 mCarList = list.getCarList();
                 mCallback.onSuccess(mCarList);
 
-                Log.d("", "");
             }
 
             @Override
             public void onFailure(Call<MyCarList> call, Throwable t) {
                 mCallback.onFailure();
-                Log.d("", "");
             }
         });
 
     }
 
+    /**
+     *
+     * @return List of Car objects.
+     *
+     * This function will return stored List of Car
+     */
     @Override
     public List<Car> getStoredData() {
         return mCarList;

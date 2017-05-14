@@ -1,76 +1,104 @@
-package com.example.yudhisthira.wunder;
+package com.example.yudhisthira.wunder.fragments;
 
-import android.*;
 import android.Manifest;
-import android.app.Application;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.vision.text.Text;
+import com.example.yudhisthira.wunder.CommonConstants;
+import com.example.yudhisthira.wunder.R;
+import com.example.yudhisthira.wunder.WunderApplication;
+import com.example.yudhisthira.wunder.data.Car;
+import com.example.yudhisthira.wunder.model.CarListModelImpl;
+import com.example.yudhisthira.wunder.presenter.CarListPresenterImpl;
+import com.example.yudhisthira.wunder.presenter.ICarListPresenter;
+import com.example.yudhisthira.wunder.view.IMainView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by yudhisthira on 11/05/17.
+ *
+ * This is a Fragment class which shows Cars information in recycler view as a list of items
  */
-
-public class CarListFragment extends Fragment implements IMainView, View.OnClickListener{
+public class CarListFragment extends Fragment implements IMainView{
 
     private static final String             TAG = CarListFragment.class.getSimpleName();
 
-    private static final int                MY_LOCATION_PERMISSIONS = 1000;
-    private static final int                REQUEST_CHECK_SETTINGS = 1001;
-
+    /**
+     * Reference of Recycler view
+     */
     private RecyclerView                    mRecyclerView;
+
+    /**
+     * Reference of Recycler adapter
+     */
     private RecyclerAdapter                 mRecyclerAdapter;
+
+    /**
+     * Layout manager for recycler view
+     */
     private RecyclerView.LayoutManager      mLayoutManager;
 
-    private IMainPresenter                  mMainPresenter;
+    /**
+     * List of Car object
+     */
+    private List<Car>                       mCarList;
 
-    private Button                          mMapButton;
+    /**
+     * Car list presenter interface
+     */
+    private ICarListPresenter               mMainPresenter;
+
+    /**
+     * reference to ProgressBar
+     */
     private ProgressBar                     mProgressBar;
+
+    /**
+     *  Reference to error text view
+     */
     private TextView                        mErrorTextView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        long start = System.currentTimeMillis();
 
         if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             checkLocationPermission();
         }
+
+        mCarList = new ArrayList<>();
+
+        long end = System.currentTimeMillis();
+        long time = end - start;
+        Log.d("PROFILING" + " " + TAG, "onCreate time = " + time);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+        long start = System.currentTimeMillis();
+
         View v = inflater.inflate(R.layout.list_view_fagment, container,false);
 
-        mMapButton = (Button)v.findViewById(R.id.btnMapView);
-        mMapButton.setOnClickListener(this);
         mProgressBar = (ProgressBar)v.findViewById(R.id.progressBar);
         mErrorTextView = (TextView)v.findViewById(R.id.errorTextView);
 
@@ -83,7 +111,7 @@ public class CarListFragment extends Fragment implements IMainView, View.OnClick
 
 
         if(null == savedInstanceState) {
-            mMainPresenter = new MainPresenterImpl(this, new MainModelImpl());
+            mMainPresenter = new CarListPresenterImpl(this, new CarListModelImpl());
             setMainPresenterToApp(mMainPresenter);
 
             mMainPresenter.fetchCarsData();
@@ -97,112 +125,104 @@ public class CarListFragment extends Fragment implements IMainView, View.OnClick
             }
 
             mRecyclerAdapter.setData(list);
-            if(null != mMapButton) {
-                mMapButton.setEnabled(true);
-            }
         }
 
-
+        long end = System.currentTimeMillis();
+        long time = end - start;
+        Log.d("PROFILING" + " " + TAG, "onCreateView time = " + time);
         return v;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        //mMainPresenter.fetchCarsData();
     }
 
     @Override
-    public void onClick(View v) {
-        mMainPresenter.onButtonClick(v.getId());
+    public void onPause() {
+        super.onPause();
     }
 
+    /**
+     * This function shows progress wheel, this called by presenter
+     */
     @Override
     public void showProgress() {
         if(null != mProgressBar) {
             mProgressBar.setVisibility(View.VISIBLE);
         }
 
-        if(null != mMapButton) {
-            mMapButton.setEnabled(false);
-        }
-
         if(null != mErrorTextView) {
             mErrorTextView.setVisibility(View.GONE);
         }
     }
 
-    public void hideProgress() {
+    /**
+     * This function hide progress wheel
+     */
+    private void hideProgress() {
         if(null != mProgressBar) {
             mProgressBar.setVisibility(View.GONE);
         }
 
-        if(null != mMapButton) {
-            mMapButton.setEnabled(true);
-        }
-
         if(null != mErrorTextView) {
             mErrorTextView.setVisibility(View.GONE);
         }
     }
 
+    /**
+     *
+     * @param carList List of Car object.
+     * Thsi function display the car list on UI, and this called by presenter
+     */
     @Override
     public void showCars(List<Car> carList) {
+        mCarList = carList;
         mRecyclerAdapter.setData(carList);
 
-//        if(null != mErrorTextView) {
-//            mErrorTextView.setVisibility(View.GONE);
-//        }
+        Intent intent = new Intent(CommonConstants.CAR_LIST_AVALABLE);
+
+        Bundle b = new Bundle();
+        b.putSerializable(CommonConstants.CAR_LIST, (ArrayList<Car>)mCarList);
+        intent.putExtra(CommonConstants.CAR_LIST_BUNDLE, b);
+
+        LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
 
         hideProgress();
     }
 
+    /**
+     * This function display error message if list loading fail for any reason
+     */
     @Override
     public void showErrorMessage() {
         if(null != mProgressBar) {
             mProgressBar.setVisibility(View.GONE);
         }
 
-        if(null != mMapButton) {
-            mMapButton.setEnabled(false);
-        }
-
         if(null != mErrorTextView) {
             mErrorTextView.setText("Fail to load Data!!!");
             mErrorTextView.setVisibility(View.VISIBLE);
         }
+
+        Intent intent = new Intent(CommonConstants.CAR_LIST_AVALABLE);
+        Bundle b = new Bundle();
+
+        b.putSerializable(CommonConstants.CAR_LIST, (ArrayList<Car>)mCarList);
+        intent.putExtra(CommonConstants.CAR_LIST_BUNDLE, b);
+        LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
     }
 
-    @Override
-    public void onButtonClick(int id) {
-        if(id == R.id.btnMapView) {
-
-            FragmentManager fm = getFragmentManager();
-            MainMapFragment mainMapFragment = (MainMapFragment)fm.findFragmentByTag("MAP_FRAGMENT");
-
-
-            if(null == mainMapFragment) {
-                mainMapFragment = new MainMapFragment();
-
-                Bundle b = new Bundle();
-                b.putSerializable("CAR_LIST", (ArrayList<Car>)mMainPresenter.getStoredData());
-                mainMapFragment.setArguments(b);
-
-                mainMapFragment.setRetainInstance(true);
-            }
-            FragmentTransaction transaction = fm.beginTransaction();
-
-            transaction.add(R.id.main_container, mainMapFragment, "MAP_FRAGMENT");
-            transaction.addToBackStack("MAP_FRAGMENT1");
-            transaction.commit();
-        }
-    }
-
+    /**
+     *
+     * @param requestCode unique int for request code for requested permision
+     * @param permissions list of permission requested
+     * @param grantResults list of permission request result
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
-            case MY_LOCATION_PERMISSIONS: {
-                // If request is cancelled, the result arrays are empty.
+            case CommonConstants.MY_LOCATION_PERMISSIONS: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
@@ -210,23 +230,30 @@ public class CarListFragment extends Fragment implements IMainView, View.OnClick
                     if (ContextCompat.checkSelfPermission(getActivity(),
                             Manifest.permission.ACCESS_FINE_LOCATION)
                             == PackageManager.PERMISSION_GRANTED) {
+
+                        checkLocationPermission();
+
+                        sendLocationPermissionResult(true);
                     }
-
-                } else {
-
-                    // Permission denied, Disable the functionality that depends on this permission.
-                    Toast.makeText(getActivity(), "permission denied", Toast.LENGTH_LONG).show();
                 }
-                return;
+                else {
+                    Toast.makeText(getActivity(), "permission denied can not update current location", Toast.LENGTH_LONG).show();
+                    sendLocationPermissionResult(false);
+                }
+                break;
             }
 
-            case REQUEST_CHECK_SETTINGS:
+            case CommonConstants.REQUEST_CHECK_SETTINGS:
                 Log.d("", "");
                 break;
         }
     }
 
-    public boolean checkLocationPermission(){
+    /**
+     *
+     * @return boolean.true if permission is granted else false
+     */
+    private boolean checkLocationPermission(){
         if (ContextCompat.checkSelfPermission(getActivity(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -235,13 +262,13 @@ public class CarListFragment extends Fragment implements IMainView, View.OnClick
             if (shouldShowRequestPermissionRationale(android.Manifest.permission.ACCESS_FINE_LOCATION)) {
 
                 requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_LOCATION_PERMISSIONS);
+                        CommonConstants.MY_LOCATION_PERMISSIONS);
 
 
             } else {
 
                 requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_LOCATION_PERMISSIONS);
+                        CommonConstants.MY_LOCATION_PERMISSIONS);
             }
             return false;
         } else {
@@ -249,16 +276,43 @@ public class CarListFragment extends Fragment implements IMainView, View.OnClick
         }
     }
 
-    private void setMainPresenterToApp(IMainPresenter mainPresenter) {
+    /**
+     *
+     * @param mainPresenter ICarListPresenter
+     *
+     * This function set the ICarListPresenter to Application class.
+     */
+    private void setMainPresenterToApp(ICarListPresenter mainPresenter) {
 
         WunderApplication application = (WunderApplication) getActivity().getApplication();
 
         application.setMainPresenterToApp(mainPresenter);
     }
 
-    private IMainPresenter getMainPresenterFromApp() {
+    /**
+     *
+     * @return ICarListPresenter
+     *
+     * This function retuns ICarListPresenter from Application class.
+     */
+    private ICarListPresenter getMainPresenterFromApp() {
         WunderApplication application = (WunderApplication) getActivity().getApplication();
 
         return application.getMainPresenterFromApp();
+    }
+
+    /**
+     *
+     * @param granted boolean
+     *
+     * This function sends a local broadcast after location permission alert dialog dismissed
+     */
+    private void sendLocationPermissionResult(boolean granted) {
+
+        Intent intent = new Intent(CommonConstants.LOCATION_PERMISSION_RESULT_ALERT_CLOSE);
+
+        intent.putExtra(CommonConstants.LOCATION_PERMISSION_RESULT, granted);
+
+        LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
     }
 }

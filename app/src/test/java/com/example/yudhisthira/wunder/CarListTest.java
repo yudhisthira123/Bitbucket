@@ -2,6 +2,12 @@ package com.example.yudhisthira.wunder;
 
 import android.util.Log;
 
+import com.example.yudhisthira.wunder.data.Car;
+import com.example.yudhisthira.wunder.model.CarListModelImpl;
+import com.example.yudhisthira.wunder.presenter.CarListPresenterImpl;
+import com.example.yudhisthira.wunder.presenter.ICarListPresenter;
+import com.example.yudhisthira.wunder.view.IMainView;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,11 +47,6 @@ public class CarListTest {
             Log.d("testListData", "showProgress");
             mCountDownLatch.countDown();
         }
-
-        @Override
-        public void onButtonClick(int id) {
-
-        }
     }
 
     @Before
@@ -58,7 +59,7 @@ public class CarListTest {
 
         mCountDownLatch = new CountDownLatch(1);
 
-        IMainPresenter mainPresenter = new MainPresenterImpl(new MockClass(), new MainModelImpl());
+        ICarListPresenter mainPresenter = new CarListPresenterImpl(new MockClass(), new CarListModelImpl());
 
         mainPresenter.fetchCarsData();
 
@@ -71,7 +72,7 @@ public class CarListTest {
     public void carsAvailableInList() throws Exception {
         mCountDownLatch = new CountDownLatch(1);
 
-        IMainPresenter mainPresenter = new MainPresenterImpl(new MockClass(), new MainModelImpl());
+        ICarListPresenter mainPresenter = new CarListPresenterImpl(new MockClass(), new CarListModelImpl());
 
         mainPresenter.fetchCarsData();
 
